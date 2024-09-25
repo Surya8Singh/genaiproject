@@ -3,6 +3,10 @@ from langchain.llms import OpenAI
 import streamlit as st
 import os
 
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env
+
+
 # Function to load OpenAI model and get a response from it
 def get_openai_response(question):
     llm = OpenAI(openai_api_key=os.getenv("OPEN_API_KEY"), model_name="text-davinci-003", temperature=0.5)
