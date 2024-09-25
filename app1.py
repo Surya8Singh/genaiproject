@@ -1,5 +1,5 @@
 # Q&A Chatbot
-from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 import streamlit as st
 import os
 
