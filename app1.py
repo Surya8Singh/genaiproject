@@ -1,14 +1,27 @@
 import streamlit as st
 import os
-from langchain_openai import OpenAI  # Updated import
-from dotenv import load_dotenv
+from langchain_openai import OpenAI
+from dotenv import load_dotenv, find_dotenv
+
+# Debug: Print current working directory and list files
+st.write(f"Current working directory: {os.getcwd()}")
+st.write(f"Files in current directory: {os.listdir()}")
 
 # Load environment variables from .env file
-load_dotenv()
+dotenv_path = find_dotenv()
+st.write(f".env file found: {'Yes' if dotenv_path else 'No'}")
+if dotenv_path:
+    st.write(f".env file path: {dotenv_path}")
+    load_dotenv(dotenv_path)
 
 # Function to load OpenAI model and get a response
 def get_openai_response(question):
     api_key = os.getenv("OPENAI_API_KEY")
+    st.write(f"API Key retrieved: {'Yes' if api_key else 'No'}")
+    if api_key:
+        st.write(f"API Key length: {len(api_key)}")
+        st.write(f"API Key starts with: {api_key[:5]}...")
+    
     if not api_key:
         raise ValueError("OPENAI_API_KEY not found in environment variables")
     
@@ -25,10 +38,6 @@ st.header("Langchain Application")
 
 # Input field for user question
 input_text = st.text_input("Input: ", key="input")
-
-# Debug: Print the API key status (remove in production)
-api_key_status = "Loaded" if os.getenv("OPENAI_API_KEY") else "Not found"
-st.write(f"API Key Status: {api_key_status}")
 
 # Submit button
 submit = st.button("Ask the question")
