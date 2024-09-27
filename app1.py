@@ -9,7 +9,6 @@ load_dotenv()  # Load environment variables from .env
 
 # Function to load OpenAI model and get a response from it
 def get_openai_response(question):
-    print("Loaded API Key:", os.getenv("OPEN_API_KEY"))
     llm = OpenAI(openai_api_key=os.getenv("OPEN_API_KEY"), model_name="text-davinci-003", temperature=0.5)
     response = llm(question)
     return response
