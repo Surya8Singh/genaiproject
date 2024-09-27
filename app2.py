@@ -12,7 +12,7 @@ st.set_page_config(page_title="Q&A Demo")
 
 # Load environment variables from .env file
 dotenv_path = find_dotenv()
-st.write(f".env file found: {'Yes' if dotenv_path else 'No'}")
+# st.write(f".env file found: {'Yes' if dotenv_path else 'No'}")
 if dotenv_path:
     # st.write(f".env file path: {dotenv_path}")
     load_dotenv(dotenv_path)
