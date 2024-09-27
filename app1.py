@@ -6,16 +6,12 @@ from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env
 
 
-# # Function to load OpenAI model and get a response from it
-# def get_openai_response(question):
-#     llm = OpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), model_name="text-davinci-003", temperature=0.5)
-#     response = llm(question)
-#     return response
 # Function to load OpenAI model and get a response from it
 def get_openai_response(question):
-    llm = OpenAI(openai_api_key="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", model_name="text-davinci-003", temperature=0.5)
+    llm = OpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), model_name="text-davinci-003", temperature=0.5)
     response = llm(question)
     return response
+
 
 # Initialize our Streamlit app
 st.set_page_config(page_title="Q&A Demo")
