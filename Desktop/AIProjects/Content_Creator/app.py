@@ -6,6 +6,18 @@ import io
 import requests
 import streamlit as st
 from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips, CompositeAudioClip
+import imageio_ffmpeg
+
+# Set the path to ffmpeg
+ffmpeg_path = "/usr/local/bin/ffmpeg"  # Update with your ffmpeg path if installed manually
+if not os.path.exists(ffmpeg_path):
+    ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()  # Use imageio's ffmpeg if manual path is invalid
+os.environ["IMAGEIO_FFMPEG_EXE"] = ffmpeg_path
+
+# Create necessary directories if they don't exist
+os.makedirs("audio", exist_ok=True)
+os.makedirs("images", exist_ok=True)
+os.makedirs("videos", exist_ok=True)
 
 def generate_script(genre, length, intensity):
     """
@@ -39,7 +51,7 @@ def generate_story(genre, length):
     story = response['choices'][0]['message']['content'].strip()
     return story
 
-def script_to_audio(script, filename="output.mp3"):
+def script_to_audio(script, filename="audio/output.mp3"):
     """
     Converts script text into an audio file.
     """
@@ -47,9 +59,9 @@ def script_to_audio(script, filename="output.mp3"):
     tts.save(filename)
     return filename
 
-def generate_image_from_scene(scene_description):
+def generate_image_from_scene(scene_description, filename):
     """
-    Generates an image from a scene description using DALL-E.
+    Generates an image from a scene description using DALL-E and saves it.
     """
     openai.api_key = "YOUR_OPENAI_API_KEY"
     response = openai.Image.create(
@@ -60,16 +72,10 @@ def generate_image_from_scene(scene_description):
     image_url = response['data'][0]['url']
     image_response = requests.get(image_url)
     image = Image.open(io.BytesIO(image_response.content))
-    return image
-
-def save_image(image, filename):
-    """
-    Saves the generated image.
-    """
     image.save(filename)
     return filename
 
-def create_movie_with_audio(images, audio_file, genre, output_filename="output_movie.mp4"):
+def create_movie_with_audio(images, audio_file, genre, output_filename="videos/output_movie.mp4"):
     """
     Combines images and audio to create a movie with background music.
     """
@@ -84,7 +90,7 @@ def create_movie_with_audio(images, audio_file, genre, output_filename="output_m
     video = video.set_audio(narration)
 
     # Add background music based on genre
-    background_music_file = f"background_{genre.lower()}.mp3"
+    background_music_file = f"audio/background_{genre.lower()}.mp3"
     if os.path.exists(background_music_file):
         background_music = AudioFileClip(background_music_file).volumex(0.2)
         combined_audio = CompositeAudioClip([narration, background_music])
@@ -127,11 +133,10 @@ def main():
             for i, scene in enumerate(scenes):
                 if scene.strip():  # Only process non-empty scenes
                     st.write(f"Generating image for scene {i+1}: {scene}")
-                    image = generate_image_from_scene(scene)
-                    image_filename = f"scene_{i+1}.png"
-                    save_image(image, image_filename)
+                    image_filename = f"images/scene_{i+1}.png"
+                    generate_image_from_scene(scene, image_filename)
                     images.append(image_filename)
-                    st.image(image, caption=f"Scene {i+1}")
+                    st.image(image_filename, caption=f"Scene {i+1}")
             st.session_state['images'] = images
 
     # Step 4: Create Movie with Audio and Images
